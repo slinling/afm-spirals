@@ -1,0 +1,10 @@
+SELECT DISTANCE( POINT('ICRS', ra, dec), POINT('ICRS', 82.61472046369643, 25.332403978827056))*3600 AS dist_arcsec, -- Calculate on-sky angular distance to MWC 758
+1000/gaiaDR3.gaia_source.parallax as z_pc, -- Convert parallax to distance in pc from Solar System
+sqrt(power(155.87, 2)+power(1000/gaiaDR3.gaia_source.parallax, 2)-2*155.87*1000/gaiaDR3.gaia_source.parallax*cos(RADIANS(DISTANCE( POINT('ICRS', ra, dec), POINT('ICRS', 82.61472046369643, 25.332403978827056))))) as dist_to_MWC758, -- Calculate 3D distance to MWC 758
+* FROM gaiaDR3.gaia_source 
+    WHERE 1=CONTAINS( POINT('ICRS', ra, dec), -- Select neighbours within 10 pc from MWC 758 with 3 requirements below
+                    CIRCLE('ICRS', 82.61472046369643, 25.332403978827056, 4)) and -- 1. Circling 11 pc on-sky sources from MWC 758, where 4deg = arctan(11pc/155.87pc) is calculated for MWC 758
+                    (1000/gaiaDR3.gaia_source.parallax < 167) and -- 2a. Within 167 pc from Solar System
+                        (1000/gaiaDR3.gaia_source.parallax > 144) and -- 2b. Beyond 144 pc from Solar System
+                    (sqrt(power(155.87,2)+power(1000/gaiaDR3.gaia_source.parallax,2)-2*155.87*1000/gaiaDR3.gaia_source.parallax*cos(RADIANS(DISTANCE( POINT('ICRS', ra, dec), POINT('ICRS', 82.61472046369643, 25.332403978827056))))) < 10) -- 3. 3D distance to MWC 758 within 10 pc
+ORDER BY dist_to_MWC758 ASC -- Order output stars by 3D distances to MWC 758
