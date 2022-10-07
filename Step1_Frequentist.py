@@ -1,10 +1,14 @@
-#! / usr / bin / env python
+#!/usr/bin/env python
 # coding: utf - 8
 
-# sys.argv[1]:name
-# sys.argv[2]:dist_to_name
-# calculate and sort the closest distance and time of all neighboring stars
-## Frequentist approach
+#### This function performs frequentist calculation to obtain closest
+####     approach distance and time
+#### 1. It calculates the values
+#### 2. Then sorts the neighbors based on their closest distance to the host
+
+# Inputs from command line:
+#   sys.argv[1]: name for a spiral host
+#   sys.argv[2]: dist_to_name parameter exported from Gaia query
 
 import sys
 import os
@@ -14,15 +18,19 @@ import astropy.units as au
 import matplotlib.pyplot as plt
 import csv
 
-np.seterr ( divide = 'ignore',invalid = 'ignore' )
+#np.seterr( divide = 'ignore', invalid = 'ignore')
 
-path_top = ' / Users / shuailin / Desktop / data_dr / '              # path to the data folder
-path_csv = path_top + sys.argv[1] + '-result.csv'              # path to each data file
-path_data = ' / Users / shuailin / Desktop / Data_sequence + ruwe / '  # path to store data
+path_top = './data_gaia_query/'                     # path to the data folder
+path_csv = path_top + sys.argv[1] + '-result.csv'   # path to each data file
+path_data = './data_fequentist/'                    # path to store data
 
-# Calculate the time and distance of the closest encounter and return the number that that meets the constraints
+
 def calculate_t ():
-
+"""
+Calculate the time and distance of the closest encounter and return the Gaia IDolklm
+ that meets the constraints (time within past 10^4 years and distance within 10
+ * radius of the disk)
+"""
     Data  = pd.read_csv ( path_csv ) # Read Gaia query results
     Data1 = Data.loc[:, ['ra','dec','pmra','pmdec','pm','dist_arcsec',sys.argv[2],'z_pc','designation','ruwe']]
     
@@ -47,31 +55,30 @@ def calculate_t ():
     Dec_r =  ( DEC - y0 ) * unit_c
 
     # relative velocity（now）
-    PMRA_r = np.array ( Data1['pmra'] / cos_DEC - pmra0 / cos_DEC0 )  # unit: mas / yr
+    PMRA_r = np.array ( Data1['pmra']/cos_DEC - pmra0/cos_DEC0 )  # unit: mas/yr
     PMDEC_r = np.array ( Data1['pmdec'] - pmdec0 )
     
     # calculate the closest distance
     a = PMDEC_r
     b =  - PMRA_r
     c = PMRA_r * Dec_r - PMDEC_r * RA_r
-    f_mas = abs ( c ) /  (  ( a ** 2 + b ** 2 ) ** 0.5 ) # unit: mas
-    f_deg = f_mas / unit_c
+    f_mas = abs ( c )/ (  ( a ** 2 + b ** 2 ) ** 0.5 ) # unit: mas
+    f_deg = f_mas/unit_c
     d_pc = z0 * np.radians ( f_deg ) * au.pc
     d_au = d_pc.to ( au.au )             # unit: au
     
     # RA coordinates at the closest distance
-    alpha =  ( - a * c ) /  ( a ** 2 + b ** 2 ) # unit: mas
-    tt =  -  (  ( RA_r - alpha ) / PMRA_r ) # unit: year
+    alpha =  ( - a * c )/ ( a ** 2 + b ** 2 ) # unit: mas
+    tt =  -  (  ( RA_r - alpha )/PMRA_r ) # unit: year
     
     # limit the range of time t
     t_where = np.where ( tt  >  0 )
     t1 = np.piecewise ( tt, [tt > 0,tt < 0], [lambda tt:0,lambda tt:tt] )
     t2 = np.piecewise ( t1, [t1 <  - 1e + 04,t1 >  =  - 1e + 04], [lambda t1: - 1e + 04,lambda t1:t1] )
     
-    Data0 = pd.DataFrame ( {'designation':ID,'dd / au':d_au,'t / yr':t2,'ra / deg':RA, 'dec / deg':DEC,'RUWE':RUWE} )
-    num = Data0.shape[0]
+    Data0 = pd.DataFrame ( {'designation':ID,'dd/au':d_au,'t/yr':t2,'ra/deg':RA, 'dec/deg':DEC,'RUWE':RUWE} )
     
-    return num,Data0,cos_DEC
+    return Data0, cos_DEC
 
 # calculate the mean, z - value and standard deviation at the closest encounter
 def calculate_z ( tt,num ):
@@ -90,23 +97,23 @@ def calculate_z ( tt,num ):
     alpha_a = data11[0] * unit_c
     delta_a = data11[2] * unit_c
     cos_delta_a = np.cos ( np.radians ( data11[2] ) )
-    mu_alpha_a = data11[4] / cos_delta_a
+    mu_alpha_a = data11[4]/cos_delta_a
     mu_delta_a = data11[6]
 
     alpha_b = data22[0] * unit_c
     delta_b = data22[2] * unit_c
     cos_delta_b = np.cos ( np.radians ( data22[2] ) )
-    mu_alpha_b = data22[4] /  cos_delta_b
+    mu_alpha_b = data22[4]/ cos_delta_b
     mu_delta_b = data22[6]
     
-    sigma_alpha_a = data11[1] / cos_delta_a
+    sigma_alpha_a = data11[1]/cos_delta_a
     sigma_delta_a = data11[3]
-    sigma_mu_alpha_a = data11[5] / cos_delta_a
+    sigma_mu_alpha_a = data11[5]/cos_delta_a
     sigma_mu_delta_a = data11[7]
     
-    sigma_alpha_b = data22[1] / cos_delta_b
+    sigma_alpha_b = data22[1]/cos_delta_b
     sigma_delta_b = data22[3]
-    sigma_mu_alpha_b = data22[5] / cos_delta_b
+    sigma_mu_alpha_b = data22[5]/cos_delta_b
     sigma_mu_delta_b = data22[7]
     
     rho_a12 = data11[8]
@@ -158,8 +165,8 @@ def calculate_z ( tt,num ):
     mu_delta_r =  (  ( mu_delta_RA ) ** 2 +  ( mu_delta_Dec ) ** 2 ) ** 0.5
 
     # rotation matrix
-    sin_theta_t = mu_delta_Dec / mu_delta_r
-    cos_theta_t = mu_delta_RA / mu_delta_r
+    sin_theta_t = mu_delta_Dec/mu_delta_r
+    cos_theta_t = mu_delta_RA/mu_delta_r
     U = np.array ( [[cos_theta_t,sin_theta_t],[ - sin_theta_t,cos_theta_t]] )
 
     mu_t = U@mu_delta_rt # relative position after rotation
@@ -167,7 +174,7 @@ def calculate_z ( tt,num ):
     mu = mu_t[0][0] # relative distance after rotation
     
     # unit conversion: mas to au
-    mu_deg = mu / unit_c
+    mu_deg = mu/unit_c
     mu_pc = R_a * np.radians ( mu_deg ) * au.pc
     mu_au = mu_pc.to ( au.au )
     
@@ -175,37 +182,38 @@ def calculate_z ( tt,num ):
     sigma =  ( Sigma_t[0,0] ) ** 0.5
     
     # unit conversion: mas to au
-    sigma_deg = sigma / unit_c
+    sigma_deg = sigma/unit_c
     sigma_pc = R_a * np.radians ( sigma_deg ) * au.pc
     sigma_au = sigma_pc.to ( au.au )
     
-    z_au = mu_au / sigma_au            # unit: au
+    z_au = mu_au/sigma_au            # unit: au
 
     return num,mu_au.value,z_au,sigma_au.value
     
 # Calculate the time and distance of the closest encounter and return the number that that meets the constraints
-num_all,DATA0,cos_delta = calculate_t ()
+DATA0,cos_delta = calculate_t ()
+num_all = Data0.shape[0]
 
 # calculate and output the mean, z - value and standard deviation at the closest encounter for each neiborning star
 data1 = []
 for i in range ( 0, num_all ):
         num_i = i
-        tt = DATA0.at[i,'t / yr']
+        tt = DATA0.at[i,'t/yr']
         j = calculate_z ( tt,num_i )
         data1.append ( j )
     
 # merge two tables
-DATA1 = pd.DataFrame ( data1,columns = ["index","d / au","z","d_error / au"] )
+DATA1 = pd.DataFrame ( data1,columns = ["index","d/au","z","d_error/au"] )
 DATA0.insert ( 0, 'index', range ( 0, 0  +  len ( DATA0 ) ) )
 outfile  =  pd.merge ( DATA1, DATA0 )
 
 # sort by distance d
-Data_d =  outfile.sort_values ( by = 'd / au', ascending = True )
+Data_d =  outfile.sort_values ( by = 'd/au', ascending = True )
 Data_d = Data_d.drop ( columns = ["index"] )
-Data_d = Data_d.drop ( columns = ["dd / au"] )
+Data_d = Data_d.drop ( columns = ["dd/au"] )
 
 # reordering columns
-order  =  ['designation', 'd / au', 'd_error / au','t / yr','z','ra / deg','dec / deg','RUWE']
+order  =  ['designation', 'd/au', 'd_error/au','t/yr','z','ra/deg','dec/deg','RUWE']
 data_d  =  Data_d[order]
 
 data_d.to_csv ( path_data + sys.argv[1] + '.csv' )
