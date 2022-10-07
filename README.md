@@ -17,7 +17,7 @@ Run `python Step2_Bayesian.py SR21 68` at [Step2_Bayesian.py](https://github.com
 The code reads the `.csv` file exported from Step 1, then write the Bayesian results using [`emcee`](https://emcee.readthedocs.io/en/stable/) on closest-approach time in an `.h5` file in folder `./data_mcmc/`.
 
 ### Step 3: Perform Monte Carlo sampling for closest approach *distance* for selected flyby candidates
-Run `python Step3_MC_distance.py` to sample the distribution for closest approach distance. (*To be released*)
+Run `python Step3_MC_distance.py SR21 68` at [Step3_MC_distance.py](https://github.com/slinling/afm-spirals/blob/main/Step3_MC_distance.py) to sample the distribution for closest approach distance. The distance samples will be stored at `./data_mcmc/` in a `.npy` file, see [distance_posterior_SR21.npy](https://github.com/slinling/afm-spirals/blob/main/data_mcmc/distance_posterior_SR21.npy) for the corresponding example for SR21 and SR21B.
 
 ## Citation
 ```
