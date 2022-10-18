@@ -1,7 +1,7 @@
 # afm-spirals
 Analytical flyby framework (AFM) for spirals [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7156158.svg)](https://doi.org/10.5281/zenodo.7156158)
 
-This is an analytical framework based on multi-variate normal distribuiton from *Gaia* DR3 outputs. See Shuai et al. (2022) for the mathematical derivation and corresponding paper (ApJS accepted).
+This is an analytical framework based on multi-variate normal distribuiton from *Gaia* DR3 outputs. See Shuai et al. ([2022](https://ui.adsabs.harvard.edu/abs/2022arXiv221003725S/abstract)) for the mathematical derivation and corresponding paper (ApJS accepted).
 
 ### Step 0: Query the [Gaia DR3 archive](https://gea.esac.esa.int/archive/) using ADQL
 Query the neighboring stars that are located within 10 pc from a given star. See [`Step0_ADQL.txt`](https://github.com/slinling/afm-spirals/blob/main/Step0_ADQL.txt) for an example using the MWC 758 system. Export the querying results in a `.csv` file in folder `./data_gaia_query/`.
