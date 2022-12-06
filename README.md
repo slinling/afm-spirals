@@ -1,5 +1,5 @@
 # afm-spirals
-Analytical flyby framework (AFM) for spirals [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7156158.svg)](https://doi.org/10.5281/zenodo.7156158)
+Analytical flyby framework (AFM) for spirals [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7403480.svg)](https://doi.org/10.5281/zenodo.7403480)
 
 This is an analytical framework based on multi-variate normal distribuiton from *Gaia* DR3 outputs. See Shuai et al. ([2022](https://ui.adsabs.harvard.edu/abs/2022arXiv221003725S/abstract)) for the mathematical derivation and corresponding paper (ApJS accepted).
 
@@ -21,15 +21,15 @@ Run `python Step3_MC_distance.py SR21 68` at [Step3_MC_distance.py](https://gith
 
 ## Citation
 ```
-@software{shuai22,
+@software{linling_shuai_2022_7403480,
   author       = {Linling Shuai and
                   Bin Ren},
-  title        = {slinling/afm-spirals: pre-release v0.1},
-  month        = oct,
+  title        = {Shuai/afm-spirals: release v1.0},
+  month        = dec,
   year         = 2022,
-  publisher    = {Zenodo, doi: \href{https://doi.org/10.5281/zenodo.7156158}{10.5281/zenodo.7156158}},
-  version      = {pre-release},
-  doi          = {10.5281/zenodo.7156158},
-  url          = {https://doi.org/10.5281/zenodo.7156158}
+  publisher    = {Zenodo},
+  version      = {release v1.0},
+  doi          = {10.5281/zenodo.7403480},
+  url          = {https://doi.org/10.5281/zenodo.7403480}
 }
 ```
