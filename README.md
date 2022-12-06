@@ -24,7 +24,7 @@ Run `python Step3_MC_distance.py SR21 68` at [Step3_MC_distance.py](https://gith
 @software{linling_shuai_2022_7403480,
   author       = {Linling Shuai and
                   Bin Ren},
-  title        = {Shuai/afm-spirals: release v1.0},
+  title        = {slinling/afm-spirals: release v1.0},
   month        = dec,
   year         = 2022,
   publisher    = {Zenodo},
